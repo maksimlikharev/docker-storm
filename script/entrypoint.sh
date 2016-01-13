@@ -87,6 +87,4 @@ function init_storm_yaml() {
 
 init_storm_yaml
 
-supervisord
-
-exit 0;
+exec supervisord
