@@ -16,7 +16,7 @@ daemons=(nimbus, drpc, supervisor, ui, logviewer)
 # Create supervisor configurations for Storm daemons
 create_supervisor_conf () {
     echo "Create supervisord configuration for storm daemon $1"
-    cat /home/storm/storm-daemon.conf | sed s,%daemon%,$1,g | tee -a /etc/supervisor/conf.d/storm-$1.conf
+    cat /home/storm/storm-daemon.conf | sed s,%daemon%,$1,g | tee /etc/supervisor/conf.d/storm-$1.conf
 }
 
 # Command
