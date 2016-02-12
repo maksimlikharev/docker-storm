@@ -4,9 +4,9 @@
 set -o posix
 set -e
 
-usage="Usage: startup.sh [--daemon (nimbus|drpc|supervisor|ui|logviewer]"
+usage="Usage: $STORM_RUNTIME --deamon | --all (nimbus|drpc|supervisor|ui.core|logviewer]"
 
-if [ $# -lt 1 ]; then
+if [ -z "$STORM_RUNTIME" ]; then
  echo $usage >&2;
  exit 2;
 fi
@@ -16,27 +16,36 @@ daemons=(nimbus, drpc, supervisor, ui, logviewer)
 # Create supervisor configurations for Storm daemons
 create_supervisor_conf () {
     echo "Create supervisord configuration for storm daemon $1"
-    cat /home/storm/storm-daemon.conf | sed s,%daemon%,$1,g | tee /etc/supervisor/conf.d/storm-$1.conf
+
+    mkdir /etc/service/$1
+    cat /home/storm/storm-daemon.sh | sed s,%daemon%,$1,g | tee /etc/service/$1/run
+    chmod a+x /etc/service/$1/run
 }
 
-# Command
-case $1 in
-    --daemon)
-        shift
-        for daemon in $*; do
-          create_supervisor_conf $daemon
-        done
-    ;;
-    --all)
-        for daemon in daemons; do
-          create_supervisor_conf $daemon
-        done
-    ;;
-    *)
-        echo $usage
-        exit 1;
-    ;;
-esac
+process_command_arguments() {
+  echo "process command arguments $1"
+
+  # Command
+  case $1 in
+      --daemon)
+          shift
+          for daemon in $*; do
+            create_supervisor_conf $daemon
+          done
+      ;;
+      --all)
+          for daemon in daemons; do
+            create_supervisor_conf $daemon
+          done
+      ;;
+      *)
+          echo $usage
+          exit 1;
+      ;;
+  esac
+}
+
+process_command_arguments $STORM_RUNTIME
 
 # Set nimbus address to localhost by default
 if [ -z "$NIMBUS_ADDR" ]; then
@@ -86,5 +95,3 @@ function init_storm_yaml() {
 }
 
 init_storm_yaml
-
-exec supervisord

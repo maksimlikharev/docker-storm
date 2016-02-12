@@ -1,7 +1,9 @@
 storm.zookeeper.servers:
-    - "%zookeeper%"
+   - "%zookeeper%"
 
 nimbus.host: "%nimbus%"
+
+storm.local.dir: "/home/storm/tmp"
 
 ui.port: %ui_port%
 
