@@ -17,7 +17,7 @@ daemons=(nimbus, drpc, supervisor, ui, logviewer)
 create_supervisor_conf () {
     echo "Create supervisord configuration for storm daemon $1"
 
-    mkdir /etc/service/$1
+    mkdir -p /etc/service/$1
     cat /home/storm/storm-daemon.sh | sed s,%daemon%,$1,g | tee /etc/service/$1/run
     chmod a+x /etc/service/$1/run
 }
